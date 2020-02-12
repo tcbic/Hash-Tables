@@ -13,8 +13,12 @@ class HashTable:
     that accepts string keys.
     '''
     def __init__(self, capacity):
-        self.capacity = capacity  # Number of buckets in the hash table.
+        # Number of buckets in the hash table.
+        # So the number of spots in the array/ultimately the length...
+        self.capacity = capacity
         self.storage = [None] * capacity
+    def __str__(self):
+        return f"HashTable capacity: {self.capacity}, HashTable current storage: {self.storage}"
 
 
     def _hash(self, key):
@@ -51,19 +55,30 @@ class HashTable:
 
         Fill this in.
         '''
-        # Convert hash into index.
+        # Get the index.
         index = self._hash_mod(key)
 
+        # # Handling collisions...
+        # if self.storage[index] is None:
+        #     self.storage[index] = LinkedPair(key, value)
 
-        
+        # else:
+        #     old = self.storage[index]
+        #     self.storage[index] = LinkedPair(key, value)
+        #     self.storage[index].next = old
+
+        # Is there something at that index location already?
+        # None means something isn't already there given how we 
+        # initialized.
         if self.storage[index] is not None:
             print(f"WARNING: Collision has occured at {index}!")
             
         else:
+        # Set the value at that index location.
+        # Store as a key, value pair as a tuple.
             self.storage[index] = (key, value)
         
         return
-
 
 
     def remove(self, key):
@@ -74,10 +89,15 @@ class HashTable:
 
         Fill this in.
         '''
+        # Get the index.
         index = self._hash_mod(key)
-        
+
+        # Check to see if there is a value already at that
+        # index location. # If there isn't a value already there...
         if self.storage[index] is not None:
+            # If the key at that index matches our key...
             if self.storage[index][0] == key:
+                # Becomes None when it's removed.
                 self.storage[index] = None
 
             else:
@@ -97,10 +117,13 @@ class HashTable:
 
         Fill this in.
         '''
+        # Get the index.
         index = self._hash_mod(key)
-        
+        # If there is something at that index location...
         if self.storage[index] is not None:
+            # If the key at that index matches our key...
             if self.storage[index][0] == key:
+                # Retrieve the value for that key.
                 return self.storage[index][1]
 
             else:
@@ -119,25 +142,43 @@ class HashTable:
 
         Fill this in.
         '''
+        # Save the old storage.
         old_storage = self.storage
-        self.capacity *= 2
+        # Double the capacity.
+        self.capacity = self.capacity * 2
+        # Reinitialize the new storage.
         self.storage = [None] * self.capacity
-
+        # Find a new home for all of the items.
         for item in old_storage:
-            self.insert(item[0], item[1])
-
+            if item is not None:
+                # Insert into new storage.
+                self.insert(item[0], item[1])
 
 
 if __name__ == "__main__":
 
+    # Create an instance with a size of 2.
     ht1 = HashTable(2)
+    print(ht1)
+    print("-----------")    
 
     ht1.insert("key1", "Hello")
     ht1.insert("key2", "Goodbye")
-
-    ht1.remove("key1")
-    
     print(ht1.storage)
+    print("-----------")
+
+    # ht1.remove("key1")
+    # ht1.remove("key2")
+    # print(ht1.storage)
+    # print("-----------")
+
+    print(ht1.retrieve("key1"))
+
+    print("-----------")
+
+    print(ht1.resize())
+    
+    # print(ht1.storage)
 
     # ht = HashTable(2)
 
