@@ -206,17 +206,36 @@ class HashTable:
 
         Fill this in.
         '''
-        # Save the old storage.
-        old_storage = self.storage
         # Double the capacity.
         self.capacity = self.capacity * 2
+
         # Reinitialize the new storage.
-        self.storage = [None] * self.capacity
-        # Find a new home for all of the items.
-        for item in old_storage:
-            if item is not None:
-                # Insert into new storage.
-                self.insert(item[0], item[1])
+        new_storage = [None] * self.capacity
+
+        # Save the old storage.
+        old_storage = self.storage[:]
+
+        self.storage = new_storage
+        
+        for i in range(len(old_storage)):
+            if old_storage[i] is not None:
+                current = old_storage[i].head
+
+                while current is not None:                    
+                    self.insert(current.key, current.value)
+                    current = current.next
+
+        # # Save the old storage.
+        # old_storage = self.storage
+        # # Double the capacity.
+        # self.capacity = self.capacity * 2
+        # # Reinitialize the new storage.
+        # self.storage = [None] * self.capacity
+        # # Find a new home for all of the items.
+        # for item in old_storage:
+        #     if item is not None:
+        #         # Insert into new storage.
+        #         self.insert(item[0], item[1])
 
 
 if __name__ == "__main__":
