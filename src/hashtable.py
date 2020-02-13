@@ -1,11 +1,52 @@
 # '''
 # Linked List hash table key/value pair
 # '''
+
+# NODE
 class LinkedPair:
     def __init__(self, key, value):
         self.key = key
         self.value = value
         self.next = None
+
+# LIST
+class LinkedList:
+    def __init__(self, head=None, next_node=None):
+        self.head = head
+        self.next = next_node
+
+    def add_to_head(self, node):
+        if self.head is None:
+            self.head = node
+
+        node.next = self.head
+        self.head = node
+
+    def find_key(self, key):
+        current = self.head
+
+        while current is not None:
+            if current.key == key:
+                return current.value
+            else:
+                current = current.next
+
+        return None
+
+    def remove(self, key):
+        if self.head.key == key:
+            self.head = self.head.next
+            return
+
+        current = self.head
+
+        while current.next is not None:
+            if current.next.key == key:
+                current.next = current.next.next
+            else:
+                current = current.next
+
+        return None
 
 class HashTable:
     '''
@@ -17,6 +58,7 @@ class HashTable:
         # So the number of spots in the array/ultimately the length...
         self.capacity = capacity
         self.storage = [None] * capacity
+
     def __str__(self):
         return f"HashTable capacity: {self.capacity}, HashTable current storage: {self.storage}"
 
@@ -58,25 +100,34 @@ class HashTable:
         # Get the index.
         index = self._hash_mod(key)
 
-        # # Handling collisions...
-        # if self.storage[index] is None:
-        #     self.storage[index] = LinkedPair(key, value)
+        # If it's empty at this index...
+        if self.storage[index] is None:
+            # Create a Linked List.
+            self.storage[index] = LinkedList(LinkedPair(key, value))
 
-        # else:
-        #     old = self.storage[index]
-        #     self.storage[index] = LinkedPair(key, value)
-        #     self.storage[index].next = old
-
-        # Is there something at that index location already?
-        # None means something isn't already there given how we 
-        # initialized.
-        if self.storage[index] is not None:
-            print(f"WARNING: Collision has occured at {index}!")
-            
         else:
-        # Set the value at that index location.
-        # Store as a key, value pair as a tuple.
-            self.storage[index] = (key, value)
+            self.storage[index].add_to_head(LinkedPair(key, value))
+
+            # # Grab what's at the index.
+            # original = self.storage[index]
+            # # Create a node at the index.
+            # self.storage[index] = LinkedPair(key, value)
+            # # What was originally at the index location is now
+            # # next to the node.
+            # self.storage[index].next = original        
+
+        # Code below is not handling collisions.
+
+        # # Is there something at that index location already?
+        # # None means something isn't already there given how we 
+        # # initialized.
+        # if self.storage[index] is not None:
+        #     print(f"WARNING: Collision has occured at {index}!")
+            
+        # else:
+        # # Set the value at that index location.
+        # # Store as a key, value pair as a tuple.
+        #     self.storage[index] = (key, value)
         
         return
 
@@ -92,19 +143,24 @@ class HashTable:
         # Get the index.
         index = self._hash_mod(key)
 
-        # Check to see if there is a value already at that
-        # index location. # If there isn't a value already there...
-        if self.storage[index] is not None:
-            # If the key at that index matches our key...
-            if self.storage[index][0] == key:
-                # Becomes None when it's removed.
-                self.storage[index] = None
-
-            else:
-                print(f"Collision has occured at {index}!")
-            
+        if self.storage[index] is None:
+            return None
         else:
-            print(f"WARNING: {key} not found.")
+            self.storage[index].remove(key)
+
+        # # Check to see if there is a value already at that
+        # # index location. # If there isn't a value already there...
+        # if self.storage[index] is not None:
+        #     # If the key at that index matches our key...
+        #     if self.storage[index][0] == key:
+        #         # Becomes None when it's removed.
+        #         self.storage[index] = None
+
+        #     else:
+        #         print(f"Collision has occured at {index}!")
+            
+        # else:
+        #     print(f"WARNING: {key} not found.")
         
         return
 
@@ -119,18 +175,26 @@ class HashTable:
         '''
         # Get the index.
         index = self._hash_mod(key)
-        # If there is something at that index location...
-        if self.storage[index] is not None:
-            # If the key at that index matches our key...
-            if self.storage[index][0] == key:
-                # Retrieve the value for that key.
-                return self.storage[index][1]
-
-            else:
-                print(f"WARNING: Collision has occured at {index}!")
-            
-        else:
+        
+        if self.storage[index] is None:
             return None
+
+        else:
+            return self.storage[index].find_key(key)       
+        
+        
+        # # If there is something at that index location...
+        # if self.storage[index] is not None:
+        #     # If the key at that index matches our key...
+        #     if self.storage[index][0] == key:
+        #         # Retrieve the value for that key.
+        #         return self.storage[index][1]
+
+        #     else:
+        #         print(f"WARNING: Collision has occured at {index}!")
+            
+        # else:
+        #     return None
         
         return
 
